@@ -115,6 +115,28 @@
     </div>
   </div>
 
+  <!-- Janela Modal: Notificação de Nova Versão -->
+  <div id="modal-atualizacao" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>🚀 Nova Atualização Disponível!</h3>
+        <button class="modal-close" onclick="fecharModalAtualizacao()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Uma nova versão do aplicativo foi lançada!</p>
+        <p><b id="app-nova-versao-txt">Versão: 1.0.1</b></p>
+        <div class="alert-box info" id="app-update-notes">
+          Melhorias de desempenho e novidades disponíveis.
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; gap: 8px;">
+        <button class="btn btn-outline" onclick="fecharModalAtualizacao()">Depois</button>
+
+        <a id="btn-baixar-update" href="#" target="_blank" class="btn btn-primary" style="text-align: center; text-decoration: none;">Baixar Novo APK</a>
+      </div>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>

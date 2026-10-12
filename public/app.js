@@ -1,3 +1,7 @@
+const APP_CURRENT_VERSION = "1.0.0";
+const GITHUB_USER = "italong8-sys";
+const GITHUB_REPO = "sorteio-loterias";
+
 let currentModalidade = 'megasena';
 let currentResultadoModalidade = 'megasena';
 let currentConcursoNumero = null;
@@ -8,10 +12,39 @@ const API_QUINA = "https://servicebus2.caixa.gov.br/portaldeloterias/api/quina";
 
 function init() {
   updateOptions();
+  
+  // Exibir termos de uso na abertura, se necessário
   const naoExibir = localStorage.getItem('naoExibirTermos');
   if (naoExibir !== 'true') {
     abrirModalAjuda(true);
   }
+
+  // Verificar se há atualização disponível no GitHub
+  checarAtualizacaoOnline();
+}
+
+async function checarAtualizacaoOnline() {
+  try {
+    const rawUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/public/version.json?t=${Date.now()}`;
+    const res = await fetch(rawUrl);
+    if (res.ok) {
+      const remoteData = await res.json();
+      if (remoteData.version && remoteData.version !== APP_CURRENT_VERSION) {
+        document.getElementById('app-nova-versao-txt').innerText = `Versão Atual: v${APP_CURRENT_VERSION} ➔ Nova: v${remoteData.version}`;
+        if (remoteData.notes) {
+          document.getElementById('app-update-notes').innerText = remoteData.notes;
+        }
+        document.getElementById('btn-baixar-update').href = remoteData.downloadUrl || `https://github.com/${GITHUB_USER}/${GITHUB_REPO}/actions`;
+        document.getElementById('modal-atualizacao').classList.remove('hidden');
+      }
+    }
+  } catch (e) {
+    // Falha silenciosa se estiver sem internet
+  }
+}
+
+function fecharModalAtualizacao() {
+  document.getElementById('modal-atualizacao').classList.add('hidden');
 }
 
 function abrirModalAjuda(obrigatorio = false) {
