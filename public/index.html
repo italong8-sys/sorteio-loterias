@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorteio Virtual - Loterias Caixa</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <h1>🎲 Sorteio Virtual</h1>
+      <p>Loterias Caixa em Tempo Real</p>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab-btn active" onclick="switchTab('megasena')">Mega-Sena</button>
+      <button class="tab-btn" onclick="switchTab('quina')">Quina</button>
+      <button class="tab-btn" onclick="switchTab('resultados')">Resultados</button>
+      <button class="tab-btn" onclick="switchTab('historico')">Guardados</button>
+    </nav>
+
+    <main id="content">
+      <!-- Painel Principal de Sorteio -->
+      <section id="tab-jogo" class="card">
+        <h2 id="jogo-titulo">Mega-Sena</h2>
+        <div class="controls">
+          <label>Quantidade de Dezenas:</label>
+          <select id="qtd-dezenas"></select>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="gerarPalpite('aleatorio')">🎲 Gerar Aleatório</button>
+          <button class="btn btn-secondary" onclick="gerarPalpite('estatistico')">📊 Gerar Estatístico</button>
+        </div>
+
+        <div id="balls-container" class="balls-grid"></div>
+
+        <button id="btn-salvar" class="btn btn-success hidden" onclick="salvarAtual()">💾 Guardar Palpite</button>
+
+        <hr class="divider">
+
+        <div class="stats-box">
+          <h3>📊 Estatísticas Rápidas (Últimos 15 Concursos)</h3>
+          <button class="btn btn-outline" onclick="carregarEstatisticas()">Carregar Ranking</button>
+          <button class="btn btn-info" onclick="abrirModalAjuda(false)">ℹ️ Como Funciona & Termos de Uso</button>
+          <div id="stats-result" class="stats-content"></div>
+        </div>
+      </section>
+
+      <!-- Painel de Resultados Oficiais -->
+      <section id="tab-resultados" class="card hidden">
+        <h2>Resultados Oficiais Caixa</h2>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="setResultadoModalidade('megasena')">Mega-Sena</button>
+          <button class="btn btn-secondary" onclick="setResultadoModalidade('quina')">Quina</button>
+        </div>
+
+        <div class="search-container">
+          <input type="number" id="input-concurso" placeholder="Nº do concurso (ex: 3000)">
+          <button class="btn btn-primary" onclick="buscarConcursoManual()">🔍 Buscar</button>
+        </div>
+
+        <div id="resultado-oficial-box" class="res-box"></div>
+
+        <div id="nav-concurso" class="btn-group hidden" style="margin-top: 14px;">
+          <button class="btn btn-outline" onclick="mudarConcurso(-1)">⬅️ Anterior</button>
+          <button class="btn btn-outline" onclick="mudarConcurso(1)">Próximo ➡️</button>
+        </div>
+      </section>
+
+      <!-- Painel de Histórico Salvo -->
+      <section id="tab-historico" class="card hidden">
+        <h2>Meus Palpites Guardados</h2>
+        <button class="btn btn-outline" onclick="carregarHistorico()">🔄 Atualizar Lista</button>
+        <div id="historico-list" class="historico-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Janela Modal: Como Funciona & Termos -->
+  <div id="modal-ajuda" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>ℹ️ Como Funciona o Aplicativo</h3>
+        <button id="modal-close-btn" class="modal-close" onclick="fecharModalAjuda()">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body-content">
+        <h4>🎲 1. Geração de Números Aleatórios</h4>
+        <p>Utiliza um algoritmo de amostragem uniforme para selecionar dezenas de forma puramente matemática e imparcial dentro do universo de números da modalidade escolhida (1 a 60 na Mega-Sena e 1 a 80 na Quina).</p>
+
+        <h4>📊 2. Geração de Números Estatísticos</h4>
+        <p>O aplicativo conecta-se diretamente à API em tempo real e analisa o histórico dos <b>últimos 15 concursos oficiais</b> da Caixa. Mapeia as dezenas mais frequentes (quentes) e menos frequentes (frias) e monta um palpite ponderado, combinando cerca de 60% de dezenas de alta ocorrência com sorteios aleatórios complementares.</p>
+
+        <div class="alert-box warning">
+          ⚠️ <b>ISENÇÃO DE GARANTIA E AVISO IMPORTANTE:</b><br>
+          Este aplicativo é apenas uma ferramenta de simulação estatística e geradora de palpites. <b>O uso deste aplicativo NÃO garante prêmios, acertos ou qualquer tipo de ganho financeiro.</b> As loterias são jogos de azar baseados em eventos independentes e aleatórios, onde cada combinação possui exatamente a mesma probabilidade matemática de ser sorteada a cada concurso.
+        </div>
+
+        <div class="alert-box info">
+          🏛️ <b>SEM VÍNCULO OFICIAL:</b><br>
+          Este aplicativo <b>NÃO possui qualquer ligação, vínculo, parceria, autorização ou representação com a Caixa Econômica Federal</b> ou com o Governo Federal. Todos os dados exibidos são públicos e obtidos via integrações externas de consulta.
+        </div>
+
+        <p class="copyright-notice">Desenvolvido por <b>©Italo N. Dos Anjos em 2026</b></p>
+
+        <div class="checkbox-container">
+          <input type="checkbox" id="chk-nao-exibir">
+          <label for="chk-nao-exibir">Não exibir esta mensagem novamente</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-entendi-modal" class="btn btn-primary" disabled onclick="fecharModalAjuda()">Role até o fim para aceitar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
